@@ -1,4 +1,4 @@
-name: RDP with LocalXpose
+name: RDP with LocalXpose Multiple Tokens Fallback
 
 on: [push, workflow_dispatch]
 
@@ -10,8 +10,40 @@ jobs:
     - name: Install LocalXpose via Chocolatey
       run: choco install localxpose -y
 
-    - name: Login to LocalXpose (Hardcoded Token)
-      run: loclx.exe account login --token GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb
+    - name: Try Login with Multiple Tokens
+      shell: pwsh
+      run: |
+        $tokens = @(
+          "FirstTokenHereReplace",
+          "SecondTokenHereReplace",
+          "ThirdTokenHereReplace"
+        )
+        $success = $false
+        foreach ($token in $tokens) {
+          Write-Host "Trying token: $token"
+          $process = Start-Process -FilePath loclx.exe -ArgumentList "account login" -NoNewWindow -PassThru -RedirectStandardInput "pipe" -RedirectStandardOutput "pipe" -RedirectStandardError "pipe"
+          $process.StandardInput.WriteLine($token)
+          $process.StandardInput.Close()
+
+          $output = $process.StandardOutput.ReadToEnd()
+          $errorOutput = $process.StandardError.ReadToEnd()
+          $process.WaitForExit()
+
+          Write-Host "Output: $output"
+          Write-Host "Error: $errorOutput"
+
+          if ($process.ExitCode -eq 0) {
+            Write-Host "Login succeeded with token: $token"
+            $success = $true
+            break
+          } else {
+            Write-Host "Login failed with token: $token"
+          }
+        }
+        if (-not $success) {
+          Write-Error "All tokens failed to login. Exiting."
+          exit 1
+        }
 
     - name: Enable Remote Desktop
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
@@ -25,5 +57,5 @@ jobs:
     - name: Set runneradmin password
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
 
-    - name: Start LocalXpose TCP Tunnel
-      run: loclx.exe tunnel tcp --port 3389
+    - name: Start LocalXpose TCP Tunnel with options
+      run: loclx.exe tunnel tcp --port 3389 --region us --protocol tcp
