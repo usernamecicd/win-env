@@ -11,8 +11,7 @@ jobs:
       run: choco install localxpose -y
 
     - name: Authenticate LocalXpose
-      run: localxpose authtoken GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb
-      # 🔒 Replace with your token from https://localxpose.io/account
+      run: C:\ProgramData\chocolatey\bin\localxpose.exe authtoken GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb
 
     - name: Enable Remote Desktop
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
@@ -26,7 +25,5 @@ jobs:
     - name: Set runneradmin password
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
 
-    - name: Start LocalXpose Tunnel (RDP on port 3389)
-      run: localxpose tunnel tcp --port 3389
-
-    # NOTE: localxpose tunnel runs until the session ends (or 15 mins on free plan)
+    - name: Start LocalXpose Tunnel (RDP on 3389)
+      run: C:\ProgramData\chocolatey\bin\localxpose.exe tunnel tcp --port 3389
