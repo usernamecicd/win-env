@@ -10,8 +10,12 @@ jobs:
     - name: Install LocalXpose via Chocolatey
       run: choco install localxpose -y
 
-    - name: Login to LocalXpose (via piped token)
-      run: echo GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb | loclx.exe account login
+    - name: Write LocalXpose config file with token
+      run: |
+        $configPath = "$env:USERPROFILE\.localxpose"
+        New-Item -ItemType Directory -Force -Path $configPath
+        $json = '{ "account": { "token": "GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb" } }'
+        $json | Out-File -Encoding ascii -FilePath "$configPath\config.json"
 
     - name: Enable Remote Desktop
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
