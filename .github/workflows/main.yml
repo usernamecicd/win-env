@@ -1,18 +1,18 @@
-name: CI
+name: RDP via LocalXpose
 
 on: [push, workflow_dispatch]
 
 jobs:
-  build:
+  rdp:
     runs-on: windows-latest
 
     steps:
-    - name: Install Ngrok via Chocolatey
-      run: choco install ngrok -y
+    - name: Install LocalXpose via Chocolatey
+      run: choco install localxpose -y
 
-    - name: Add Ngrok Auth Token (Hardcoded)
-      run: ngrok config add-authtoken 2yUngokzInVWIDhPU0qHlsuoRWR_6kQ16pdN2RPmF3CHsSJBr
-      # Replace with your actual token
+    - name: Authenticate LocalXpose
+      run: localxpose authtoken GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb
+      # 🔒 Replace with your token from https://localxpose.io/account
 
     - name: Enable Remote Desktop
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
@@ -26,5 +26,7 @@ jobs:
     - name: Set runneradmin password
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
 
-    - name: Start Ngrok TCP Tunnel
-      run: ngrok tcp 3389
+    - name: Start LocalXpose Tunnel (RDP on port 3389)
+      run: localxpose tunnel tcp --port 3389
+
+    # NOTE: localxpose tunnel runs until the session ends (or 15 mins on free plan)
