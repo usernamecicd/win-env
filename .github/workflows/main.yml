@@ -1,21 +1,17 @@
-name: RDP via LocalXpose
+name: RDP with LocalXpose
 
 on: [push, workflow_dispatch]
 
 jobs:
   rdp:
     runs-on: windows-latest
+
     steps:
-    - name: Download LocalXpose
-      run: |
-        Invoke-WebRequest -Uri https://github.com/localxpose/localxpose/releases/latest/download/localxpose-windows-amd64.exe -OutFile localxpose.exe
+    - name: Install LocalXpose via Chocolatey
+      run: choco install localxpose -y
 
-    - name: Make executable (not required on Windows but safe)
-      run: |
-        # no chmod needed on Windows
-
-    - name: Authenticate LocalXpose
-      run: .\localxpose.exe authtoken GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb
+    - name: Login to LocalXpose (Hardcoded Token)
+      run: loclx.exe account login --token GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb
 
     - name: Enable Remote Desktop
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
@@ -29,6 +25,5 @@ jobs:
     - name: Set runneradmin password
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
 
-    - name: Start LocalXpose Tunnel (RDP on port 3389)
-      run: .\localxpose.exe tunnel tcp --port 3389
-
+    - name: Start LocalXpose TCP Tunnel
+      run: loclx.exe tunnel tcp --port 3389
