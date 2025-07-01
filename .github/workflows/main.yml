@@ -7,36 +7,36 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Install LocalXpose via Chocolatey
-      run: choco install localxpose -y
+      - name: Install LocalXpose via Chocolatey
+        run: choco install localxpose -y
 
-    - name: Write LocalXpose config file with token
-      shell: pwsh
-      run: |
-        $configPath = Join-Path $env:USERPROFILE ".localxpose"
-        if (-Not (Test-Path $configPath)) {
-          New-Item -ItemType Directory -Force -Path $configPath
-        }
-        $json = @"
+      - name: Write LocalXpose config file with token
+        shell: pwsh
+        run: |
+          $configPath = Join-Path $env:USERPROFILE ".localxpose"
+          if (-Not (Test-Path $configPath)) {
+            New-Item -ItemType Directory -Force -Path $configPath
+          }
+          $json = @"
 {
   "account": {
     "token": "GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb"
   }
 }
 "@
-        $json | Out-File -Encoding ascii -FilePath (Join-Path $configPath "config.json")
+          $json | Out-File -Encoding ascii -FilePath (Join-Path $configPath "config.json")
 
-    - name: Enable Remote Desktop
-      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+      - name: Enable Remote Desktop
+        run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
 
-    - name: Allow RDP in Firewall
-      run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+      - name: Allow RDP in Firewall
+        run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
-    - name: Enable User Authentication
-      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
+      - name: Enable User Authentication
+        run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
 
-    - name: Set runneradmin password
-      run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
+      - name: Set runneradmin password
+        run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
 
-    - name: Start LocalXpose TCP Tunnel
-      run: loclx.exe tunnel tcp --port 3389
+      - name: Start LocalXpose TCP Tunnel
+        run: loclx.exe tunnel tcp --port 3389
