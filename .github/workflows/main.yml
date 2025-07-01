@@ -12,7 +12,7 @@ jobs:
 
     - name: Add Ngrok Auth Token (Hardcoded)
       run: ngrok config add-authtoken 2yUngokzInVWIDhPU0qHlsuoRWR_6kQ16pdN2RPmF3CHsSJBr
-      # Replace the token above with your real one from ngrok dashboard
+      # Replace with your actual token
 
     - name: Enable Remote Desktop
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
@@ -27,7 +27,4 @@ jobs:
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
 
     - name: Start Ngrok TCP Tunnel
-      run: start ngrok tcp 3389
-
-    - name: Keep Session Alive for 30 Minutes
-      run: timeout /t 1800
+      run: ngrok tcp 3389
