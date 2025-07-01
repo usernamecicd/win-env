@@ -5,14 +5,21 @@ on: [push, workflow_dispatch]
 jobs:
   rdp:
     runs-on: windows-latest
-
     steps:
     - name: Install LocalXpose via Chocolatey
       run: choco install localxpose -y
 
-    - name: Authenticate LocalXpose
-      run: C:\ProgramData\chocolatey\bin\localxpose.exe authtoken GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb
+    - name: Locate localxpose.exe
+      run: |
+        Get-Command localxpose.exe
+        dir C:\ProgramData\chocolatey\bin\localxpose.exe
+        dir C:\Program Files\localxpose\
 
+    - name: Run LocalXpose AuthToken (with PATH fix)
+      shell: pwsh
+      run: |
+        $env:PATH += ";C:\ProgramData\chocolatey\bin"
+        localxpose.exe authtoken GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb
     - name: Enable Remote Desktop
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
 
