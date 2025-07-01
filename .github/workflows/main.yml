@@ -17,13 +17,13 @@ jobs:
           if (-Not (Test-Path $configPath)) {
             New-Item -ItemType Directory -Force -Path $configPath
           }
-          $json = @"
-{
-  "account": {
-    "token": "GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb"
-  }
-}
-"@
+          $json = @'
+          {
+            "account": {
+              "token": "GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb"
+            }
+          }
+          '@
           $json | Out-File -Encoding ascii -FilePath (Join-Path $configPath "config.json")
 
       - name: Enable Remote Desktop
