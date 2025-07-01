@@ -10,7 +10,7 @@ jobs:
     - name: Install LocalXpose via Chocolatey
       run: choco install localxpose -y
 
-    - name: Login to LocalXpose (Pipe token)
+    - name: Login to LocalXpose (via piped token)
       run: echo GnMxsrq9Z7nsyKakxFaZeRia6qsSsnHencoxUvSb | loclx.exe account login
 
     - name: Enable Remote Desktop
@@ -25,5 +25,5 @@ jobs:
     - name: Set runneradmin password
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
 
-    - name: Start LocalXpose TCP Tunnel with options
-      run: loclx.exe tunnel tcp --port 3389 --region us --protocol tcp
+    - name: Start LocalXpose TCP Tunnel
+      run: loclx.exe tunnel tcp --port 3389
